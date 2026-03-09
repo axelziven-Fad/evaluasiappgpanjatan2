@@ -1,431 +1,73 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard Komando SPPG</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-   
-  <style> 
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: white; } 
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #64748b; border-radius: 10px; }
-    .swal2-popup.swal-dark { border: 1px solid #334155; background-color: #1e293b !important; }
-    .swal2-input, .swal2-textarea { font-size: 0.875rem !important; background-color: #0f172a !important; color: white !important; border-color: #475569 !important; }
-    .swal2-input:focus, .swal2-textarea:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 1px #3b82f6 !important; }
-    #aiResult strong { color: #60a5fa; font-weight: 800; letter-spacing: 0.025em; }
-    #aiResult ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
-    #aiResult li { margin-bottom: 0.25rem; }
-    #aiResult h1, #aiResult h2, #aiResult h3 { color: #a78bfa; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; }
-    
-    /* Style untuk Input Date agar terlihat profesional di mode gelap */
-    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Aplikasi Bro Fadlan</title>
+    <style>
+        /* Reset CSS Total - Biar Full Screen Tanpa Celah */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Mencegah scroll pada body utama */
+            background-color: #ffffff;
+        }
+
+        /* Container Iframe */
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Iframe Style */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Loading Screen Sederhana */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 0; /* Di belakang iframe */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #555;
+            font-size: 14px;
+        }
+    </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
-   
-  <div class="mb-6 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 border-b border-slate-800 pb-5">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400 flex items-center truncate">
-            <i class="ph-fill ph-shield-check mr-3 text-blue-500"></i> SPPG COMMAND CENTER
-            <span class="ml-3 hidden md:inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-blue-400/50 shadow-sm tracking-wider">by Fadlan Kharisma</span>
-        </h1>
-        <p class="text-slate-400 mt-1 text-sm md:text-base font-medium">SPPG Kulon Progo Panjatan Panjatan 2</p>
-      </div>
-       
-      <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
-          <div class="flex items-center w-full sm:w-auto bg-slate-800 p-2 rounded-xl border border-slate-600 shadow-inner group hover:border-blue-500 transition-colors">
-              <i class="ph-bold ph-calendar-blank text-blue-400 text-xl mx-2"></i>
-              <input type="date" id="inputTanggal" class="bg-transparent text-white font-bold outline-none cursor-pointer w-full text-sm py-1" onchange="ubahTanggal()">
-          </div>
-           
-          <button onclick="mintaEvaluasiAIPaksa()" class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center shadow-lg shadow-purple-900/30 transition-all hover:-translate-y-0.5 border border-purple-400/20 group">
-              <i class="ph-bold ph-arrows-clockwise mr-2 text-xl group-hover:rotate-180 transition-transform duration-500"></i> Generate Evaluasi AI
-          </button>
-      </div>
-  </div>
+<body>
 
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="statsGrid">
-    <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 shadow-md backdrop-blur-sm relative overflow-hidden">
-        <div class="absolute -right-6 -top-6 opacity-5 rotate-12"><i class="ph-fill ph-files text-8xl text-blue-400"></i></div>
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider relative z-10">Laporan di Tanggal Ini</p>
-        <p class="text-3xl md:text-4xl font-extrabold text-white mt-1 relative z-10" id="statTotal">-</p>
-    </div>
-    <div class="bg-slate-800/60 p-4 rounded-2xl border border-red-900/30 shadow-md backdrop-blur-sm relative overflow-hidden">
-        <div class="absolute -right-6 -top-6 opacity-5 rotate-12"><i class="ph-fill ph-warning text-8xl text-red-400"></i></div>
-        <p class="text-red-400 text-xs font-bold uppercase tracking-wider relative z-10">Total Masalah</p>
-        <p class="text-3xl md:text-4xl font-extrabold text-red-400 mt-1 relative z-10" id="statIsu">-</p>
-    </div>
-    <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 shadow-md backdrop-blur-sm relative overflow-hidden">
-        <div class="absolute -right-6 -top-6 opacity-5 rotate-12"><i class="ph-fill ph-siren text-8xl text-slate-200"></i></div>
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider relative z-10">Kasus Darurat</p>
-        <p class="text-3xl md:text-4xl font-extrabold text-white mt-1 relative z-10" id="statDarurat">-</p>
-    </div>
-    <div class="bg-slate-800/60 p-4 rounded-2xl border border-yellow-900/30 shadow-md backdrop-blur-sm relative overflow-hidden">
-        <div class="absolute -right-6 -top-6 opacity-10 rotate-12 text-yellow-500"><i class="ph-fill ph-hourglass-high text-8xl"></i></div>
-        <p class="text-yellow-400 text-xs font-bold uppercase tracking-wider relative z-10">Belum Diselesaikan</p>
-        <p class="text-3xl md:text-4xl font-extrabold text-yellow-400 mt-1 relative z-10" id="statPending">-</p>
-    </div>
-  </div>
+    <div id="loader">Memuat Aplikasi...</div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-     
-    <div class="lg:col-span-1">
-        <div class="bg-slate-800/80 p-5 rounded-2xl shadow-xl border border-slate-700/80 h-full flex flex-col relative overflow-hidden backdrop-blur-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-200 text-lg flex items-center"><i class="ph-fill ph-chart-bar-horizontal mr-2 text-blue-500"></i> Komposisi Laporan</h3>
-                <span class="text-[10px] font-bold text-blue-300 bg-blue-900/30 px-2 py-1 rounded-full uppercase tracking-wider animate-pulse border border-blue-800">👆 Klik Bar!</span>
-            </div>
-            <div class="relative flex-1 w-full min-h-[280px]"><canvas id="menuChart"></canvas></div>
-        </div>
+    <div class="iframe-container">
+        <iframe 
+            src="https://script.google.com/macros/s/AKfycbwtQWhRoJVuxOE3jE2NC7fZLg5lW8Wdud6eId6RyPY0-gLMPv9lEfRAjk80CPl-sQ/exec?page=admin" 
+            allow="geolocation *; microphone *; camera *; clipboard-write *" 
+            sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+            title="App Frame">
+        </iframe>
     </div>
 
-    <div class="lg:col-span-2 bg-slate-800/80 rounded-2xl shadow-xl border border-slate-700/80 overflow-hidden flex flex-col h-[400px] backdrop-blur-md">
-        <div class="p-4 border-b border-slate-700/80 bg-slate-800/90 flex justify-between items-center">
-            <h3 class="font-bold text-slate-200 flex items-center text-base md:text-lg">
-                <i class="ph-fill ph-warning-octagon text-yellow-500 mr-2 text-xl md:text-2xl"></i> Rincian Insiden di Tanggal Ini
-            </h3>
-        </div>
-        <div class="overflow-y-auto flex-1 p-2 custom-scrollbar">
-            <table class="w-full text-sm text-left text-slate-300">
-                <thead class="text-xs text-slate-400 uppercase bg-slate-900/70 sticky top-0 z-10 backdrop-blur-md font-bold tracking-wider">
-                    <tr>
-                        <th class="px-4 py-3 rounded-l-lg">Waktu & ID</th>
-                        <th class="px-4 py-3">Lokasi & Detail Isu</th>
-                        <th class="px-4 py-3 text-right rounded-r-lg">Status & Eksekusi</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody" class="divide-y divide-slate-700/50">
-                    <tr><td colspan="3" class="text-center py-10 text-slate-500 font-medium animate-pulse">Memuat database utama...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-  </div>
-
-  <div class="bg-slate-800/90 border-2 border-indigo-500/30 p-6 md:p-8 rounded-2xl shadow-2xl mb-8 relative overflow-hidden backdrop-blur-xl" id="aiPanel">
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500"></div>
-    <div class="absolute -right-10 -bottom-10 opacity-5 text-indigo-300"><i class="ph-fill ph-brain text-[12rem]"></i></div>
-     
-    <div class="flex justify-between items-center mb-6 relative z-10 border-b border-indigo-900/50 pb-4">
-        <h3 class="font-extrabold text-indigo-300 flex items-center text-xl md:text-2xl">
-            <i class="ph-fill ph-robot mr-3 text-3xl md:text-4xl bg-indigo-900/50 p-2 rounded-xl border border-indigo-700/50"></i> 
-            EVALUASI LAPANGAN (AI)
-        </h3>
-        <span id="labelTanggalAI" class="text-xs bg-indigo-900/30 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20 font-bold flex items-center"><i class="ph-bold ph-calendar mr-1"></i> Tanggal Terpilih</span>
-    </div>
-     
-    <div id="aiResult" class="text-sm md:text-base leading-relaxed text-slate-300 bg-slate-950/60 p-6 rounded-xl border border-indigo-900/50 font-medium shadow-inner relative z-10 overflow-hidden prose prose-invert max-w-none prose-strong:text-blue-400 prose-strong:font-extrabold prose-headings:text-indigo-300">
-        <div class="animate-pulse text-indigo-400">Sedang menarik memori AI untuk tanggal ini...</div>
-    </div>
-  </div>
-
-  <script>
-    Chart.register(ChartDataLabels);
-
-    window.allDataLaporan = []; // MENYIMPAN SELURUH DATA SEMENTARA DI BROWSER
-    window.dataLaporanHarian = {};
-    window.kumpulanKomentar = {};
-
-    // FUNGSI MENDAPATKAN TANGGAL LOKAL (WIB)
-    function getLocalYYYYMMDD(dateObj) {
-        const offset = dateObj.getTimezoneOffset();
-        let local = new Date(dateObj.getTime() - (offset * 60 * 1000));
-        return local.toISOString().split('T')[0];
-    }
-
-    // FUNGSI AWAL MUAT SEMUA DATA KE MEMORI FRONTEND
-    function muatDataUtama() {
-        // Set input tanggal ke hari ini secara default
-        const hariIni = getLocalYYYYMMDD(new Date());
-        $('#inputTanggal').val(hariIni);
-
-        google.script.run
-        .withFailureHandler(err => {
-            Swal.fire({ title: 'Koneksi Gagal', text: err.message, icon: 'error', background: '#1e293b', color: '#fff' });
-        })
-        .withSuccessHandler(data => {
-            window.allDataLaporan = data;
-            ubahTanggal(); // Render dashboard untuk tanggal yang sedang dipilih
-        }).getDashboardData();
-    }
-
-    // FUNGSI DIPANGGIL SAAT TANGGAL DIGANTI
-    window.ubahTanggal = function() {
-        const selectedDate = $('#inputTanggal').val();
-        renderDashboard(selectedDate);
-        renderEvaluasiAI(selectedDate, false);
-    }
-
-    // FUNGSI MEMFILTER DAN MENGGAMBAR DASHBOARD SESUAI TANGGAL
-    function renderDashboard(targetDate) {
-        let totalLaporan = 0, totalIssue = 0, pendingIssue = 0, kasusDarurat = 0;
-        
-        // UPDATE: Penambahan 'Aman' ke dalam object stats dan kumpulanKomentar
-        const issueStats = { Aman: 0, Nasi: 0, Lauk: 0, Sayur: 0, MenuKering: 0, Buah: 0, Susu: 0, Keracunan: 0, Pengantaran: 0, Kekurangan: 0, Kebersihan: 0 };
-        window.kumpulanKomentar = { Aman: [], Nasi: [], Lauk: [], Sayur: [], MenuKering: [], Buah: [], Susu: [], Keracunan: [], Pengantaran: [], Kekurangan: [], Kebersihan: [] };
-         
-        let htmlTabel = "";
-        window.dataLaporanHarian = {};
-
-        // Filter dari memory lokal
-        const dataHariIni = window.allDataLaporan.filter(r => {
-            return getLocalYYYYMMDD(new Date(r.waktu)) === targetDate;
-        });
-
-        dataHariIni.forEach(r => {
-            if (r.tipe === 'issue' || r.tipe === 'danger') {
-                totalIssue++;
-                if(r.statusPenyelesaian === 'Belum Tindakan') pendingIssue++;
-                
-                let keluhanTeks = r.keluhan && r.keluhan !== "" ? r.keluhan : "Tidak ada detail kronologi.";
-                let objKomen = { teks: keluhanTeks, lokasi: r.sekolah, waktu: r.waktu };
-
-                if(r.tipe === 'danger') { issueStats.Keracunan++; kasusDarurat++; window.kumpulanKomentar.Keracunan.push(objKomen); }
-                if(r.kategori === 'Pengantaran') { issueStats.Pengantaran++; window.kumpulanKomentar.Pengantaran.push(objKomen); }
-                if(r.kategori === 'Kekurangan') { issueStats.Kekurangan++; window.kumpulanKomentar.Kekurangan.push(objKomen); }
-                if(r.kategori === 'Kebersihan') { issueStats.Kebersihan++; window.kumpulanKomentar.Kebersihan.push(objKomen); }
-                
-                let menuLaporan = r.menu || "";
-                if(menuLaporan.includes('Nasi')) { issueStats.Nasi++; window.kumpulanKomentar.Nasi.push(objKomen); }
-                if(menuLaporan.includes('Lauk')) { issueStats.Lauk++; window.kumpulanKomentar.Lauk.push(objKomen); }
-                if(menuLaporan.includes('Sayur')) { issueStats.Sayur++; window.kumpulanKomentar.Sayur.push(objKomen); }
-                if(menuLaporan.includes('Menu Kering')) { issueStats.MenuKering++; window.kumpulanKomentar.MenuKering.push(objKomen); }
-                if(menuLaporan.includes('Susu')) { issueStats.Susu++; window.kumpulanKomentar.Susu.push(objKomen); }
-                if(menuLaporan.includes('Buah')) { issueStats.Buah++; window.kumpulanKomentar.Buah.push(objKomen); }
-
-                window.dataLaporanHarian[r.rowIdx] = r;
-                let tglObj = new Date(r.waktu);
-                let jamString = tglObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-                let warnaLabel = r.tipe === 'danger' ? 'bg-red-600/80 text-white border-red-500/50' : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-                let iconKendala = r.tipe === 'danger' ? 'ph-fill ph-warning-octagon' : 'ph-fill ph-warning';
-                
-                let btnHtml = '';
-                if (r.statusPenyelesaian === 'Selesai') {
-                    btnHtml = `<div class="flex flex-col items-end">
-                                <span class="text-[11px] font-bold text-emerald-400 bg-emerald-900/40 px-3 py-1.5 rounded-lg border border-emerald-500/30 flex items-center mb-1"><i class="ph-bold ph-check-circle mr-1"></i> Telah Diselesaikan</span>
-                                <span class="text-[10px] text-slate-400 italic max-w-[150px] truncate" title="${r.tindakan}">${r.tindakan}</span>
-                               </div>`;
-                } else {
-                    btnHtml = `<button onclick="bukaPopupDetail(${r.rowIdx})" class="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-yellow-950 px-4 py-2.5 rounded-xl text-xs font-extrabold transition shadow-lg shadow-yellow-900/20 whitespace-nowrap inline-flex items-center border border-yellow-400/50 group/btn">
-                                  <i class="ph-bold ph-wrench mr-2 text-base group-hover/btn:rotate-90 transition-transform"></i> Tindak Lanjut
-                               </button>`;
-                }
-
-                htmlTabel += `
-                <tr class="hover:bg-slate-700/30 transition-colors group">
-                    <td class="px-4 py-4 align-top w-1/4">
-                        <span class="font-mono font-bold text-blue-400 text-sm bg-blue-900/30 px-2 py-0.5 rounded border border-blue-800/50">${r.id}</span>
-                        <div class="text-xs text-slate-400 mt-2 flex items-center font-medium"><i class="ph-bold ph-clock-countdown mr-1.5 text-slate-500 group-hover:text-blue-400 transition"></i>Pukul ${jamString} WIB</div>
-                    </td>
-                    <td class="px-4 py-4 align-top">
-                        <div class="font-bold text-white mb-2 text-[15px] flex items-center"><i class="ph-fill ph-map-pin mr-1.5 text-slate-500"></i>${r.sekolah}</div>
-                        <div class="flex flex-wrap gap-2 mb-2">
-                            <span class="${warnaLabel} px-2 py-0.5 rounded text-[11px] font-extrabold uppercase border flex items-center tracking-wider"><i class="${iconKendala} mr-1"></i> ${r.kategori}</span>
-                            ${r.menu && r.menu !== '-' ? `<span class="bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded text-[11px] border border-slate-600 flex items-center"><i class="ph-fill ph-fork-knife mr-1"></i> ${r.menu}</span>` : ''}
-                        </div>
-                        <span class="text-sm text-slate-300 block mt-2 leading-relaxed bg-slate-900/40 p-2 rounded-lg border border-slate-800/50 italic">"${r.keluhan}"</span>
-                    </td>
-                    <td class="px-4 py-4 text-right align-middle w-1/4">${btnHtml}</td>
-                </tr>`;
-            } else if (r.tipe === 'praise') {
-                totalLaporan++; 
-                issueStats.Aman++; // Increment stat Aman
-                let keluhanTeks = r.keluhan && r.keluhan !== "" ? r.keluhan : "Sesuai standar. Tidak ada catatan khusus.";
-                window.kumpulanKomentar.Aman.push({ teks: keluhanTeks, lokasi: r.sekolah, waktu: r.waktu });
-            }
-        });
-
-        totalLaporan += totalIssue;
-
-        $('#statTotal').text(totalLaporan);
-        $('#statIsu').text(totalIssue);
-        $('#statDarurat').text(kasusDarurat);
-        $('#statPending').text(pendingIssue);
-         
-        if(htmlTabel === "") {
-            htmlTabel = `<tr><td colspan="3" class="text-center py-16"><div class="bg-emerald-900/20 p-6 rounded-2xl border border-emerald-800/50 inline-block"><i class="ph-fill ph-check-circle text-6xl mb-4 block text-emerald-500 mx-auto"></i><span class="text-emerald-400 font-bold text-lg">Tidak ada laporan masalah yang belum diurus.</span></div></td></tr>`;
-        }
-        $('#tableBody').html(htmlTabel);
-
-        // UPDATE: Logika warna dinamis untuk Chart, Aman selalu di-force warna Hijau (#22c55e)
-        const labelsChart = []; const dataChart = []; const bgColorsChart = [];
-        const mapWarna = { Aman: '#22c55e', Nasi: '#3b82f6', Lauk: '#f59e0b', Sayur: '#10b981', MenuKering: '#84cc16', Buah: '#ec4899', Susu: '#8b5cf6', Keracunan: '#ef4444', Pengantaran: '#f97316', Kekurangan: '#64748b', Kebersihan: '#14b8a6' };
-        
-        let totalDataChart = 0;
-        Object.keys(issueStats).forEach(key => {
-            if(issueStats[key] > 0) { 
-                labelsChart.push(key); 
-                dataChart.push(issueStats[key]);
-                bgColorsChart.push(mapWarna[key] || '#94a3b8');
-                totalDataChart += issueStats[key];
-            }
-        });
-
-        if(window.myChart) window.myChart.destroy();
-        const ctxMenu = document.getElementById('menuChart').getContext('2d');
-        window.myChart = new Chart(ctxMenu, {
-            type: 'bar',
-            data: { 
-                labels: labelsChart, 
-                datasets: [{ 
-                    data: dataChart, 
-                    backgroundColor: bgColorsChart, 
-                    borderWidth: 2, borderColor: '#1e293b', borderRadius: 8, borderSkipped: false
-                }] 
-            },
-            options: { 
-                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-                scales: { x: { display: false, grid: { display: false } }, y: { grid: { display: false, drawBorder: false }, ticks: { color: '#94a3b8', font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600' } } } },
-                plugins: { 
-                    legend: { display: false }, tooltip: { enabled: false },
-                    datalabels: {
-                        color: '#ffffff', font: { weight: '800', size: 11, family: "'Plus Jakarta Sans', sans-serif" },
-                        formatter: (value, ctx) => { return value > 0 ? ((value / totalDataChart) * 100).toFixed(0) + "%" : ''; },
-                        anchor: 'center', align: 'center',
-                    }
-                },
-                onHover: (e, el) => { e.native.target.style.cursor = el[0] ? 'pointer' : 'default'; },
-                onClick: (e, el, chart) => { if (el.length > 0) tampilkanKomentarPedas(chart.data.labels[el[0].index]); }
-            }
-        });
-    }
-
-    // FUNGSI PANGGIL AI SESUAI TANGGAL
-    window.renderEvaluasiAI = function(targetDate, forceUpdate) {
-        $('#aiResult').html('<div class="animate-pulse text-indigo-400"><i class="ph-duotone ph-spinner-gap animate-spin mr-2"></i>Menarik rekam jejak AI dari Database...</div>');
-         
-        let namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-        let d = new Date(targetDate);
-        $('#labelTanggalAI').html(`<i class="ph-bold ph-calendar-check mr-1.5"></i> Evaluasi Tanggal: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}`);
-
-        google.script.run.withSuccessHandler(savedText => {
-            $('#aiResult').html(marked.parse(savedText));
-        }).getEvaluasiByDate(targetDate, forceUpdate);
-    }
-
-    // FUNGSI PAKSA UPDATE AI (TOMBOL MANUAL)
-    function mintaEvaluasiAIPaksa() {
-        const selectedDate = $('#inputTanggal').val();
-        renderEvaluasiAI(selectedDate, true);
-         
-        const Toast = Swal.mixin({ toast: true, position: "top-end", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        Toast.fire({ icon: "info", title: "Menyusun evaluasi baru...", background: '#1e293b', color: '#fff' });
-    }
-
-    // POPUP KOMENTAR (KINI BISA MENANGANI AMAN MAUPUN PEDAS)
-    function tampilkanKomentarPedas(kategori) {
-        let komentarList = window.kumpulanKomentar[kategori];
-        if (!komentarList || komentarList.length === 0) return;
-
-        komentarList.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
-        let top15 = komentarList.slice(0, 15);
-
-        // UPDATE: Logika kondisional UI untuk "Aman" vs "Masalah"
-        let isAman = kategori === 'Aman';
-        let popupTitle = isAman 
-            ? `<div class="text-emerald-500 font-extrabold flex items-center text-lg uppercase border-b border-slate-700/80 pb-4 tracking-wider"><span class="bg-emerald-500/10 p-2 rounded-lg mr-3 border border-emerald-500/20"><i class="ph-fill ph-check-circle text-3xl"></i></span> <div class="flex flex-col items-start"><span>Laporan Aman Terkendali</span><span class="text-xs text-slate-400 font-medium normal-case mt-1">Menampilkan ${top15.length} laporan positif</span></div></div>`
-            : `<div class="text-red-500 font-extrabold flex items-center text-lg uppercase border-b border-slate-700/80 pb-4 tracking-wider"><span class="bg-red-500/10 p-2 rounded-lg mr-3 border border-red-500/20"><i class="ph-fill ph-fire text-3xl animate-pulse"></i></span> <div class="flex flex-col items-start"><span>Review Pedas: ${kategori}</span><span class="text-xs text-slate-400 font-medium normal-case mt-1">Menampilkan ${top15.length} keluhan</span></div></div>`;
-
-        let borderCard = isAman ? 'border-emerald-500' : 'border-red-500';
-        let textLokasi = isAman ? 'text-emerald-400' : 'text-red-400';
-        let bgLokasi = isAman ? 'bg-emerald-950/50 border-emerald-900/50' : 'bg-red-950/50 border-red-900/50';
-
-        let htmlList = '<div class="space-y-3 text-left max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">';
-        top15.forEach((k) => {
-            let timeAgo = new Date(k.waktu).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            htmlList += `
-            <div class="bg-slate-900/80 p-4 rounded-xl border-l-[6px] ${borderCard} shadow-sm hover:bg-slate-900 transition">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-extrabold ${textLokasi} uppercase tracking-wider flex items-center ${bgLokasi} px-2 py-1 rounded border"><i class="ph-fill ph-map-pin mr-1"></i>${k.lokasi}</span>
-                    <span class="text-[10px] text-slate-500 font-mono bg-slate-800 px-1.5 py-0.5 rounded">Pukul ${timeAgo}</span>
-                </div>
-                <p class="text-sm text-slate-200 italic font-medium leading-relaxed border-l-2 border-slate-700 pl-3">"${k.teks}"</p>
-            </div>`;
-        });
-        htmlList += '</div>';
-
-        Swal.fire({
-            title: popupTitle,
-            html: htmlList, background: '#1e293b', color: '#fff', showConfirmButton: false, showCloseButton: true, width: '36em', customClass: { popup: 'swal-dark !rounded-3xl !border-2 !border-slate-700' }
-        });
-    }
-
-    // PENYELESAIAN MASALAH
-    function bukaPopupDetail(rowIdx) {
-        const data = window.dataLaporanHarian[rowIdx];
-        let fotoHtml = '';
-        if (data.foto && data.foto.trim() !== '') {
-            let urls = data.foto.split('\n');
-            fotoHtml = '<div class="flex flex-wrap gap-3 mt-3">';
-            urls.forEach(url => {
-                if(url.startsWith('http')) { fotoHtml += `<a href="${url.trim()}" target="_blank" class="block rounded-xl overflow-hidden border-2 border-slate-700/50 hover:border-blue-500 transition shadow-sm group relative"><img src="${url.trim()}" class="w-20 h-20 object-cover"></a>`; }
-            });
-            fotoHtml += '</div>';
-        } else {
-            fotoHtml = '<div class="text-xs text-slate-500 mt-3 italic flex items-center bg-slate-900/50 p-2.5 rounded-lg w-fit border border-slate-800"><i class="ph-fill ph-image-broken mr-2 text-lg text-slate-600"></i> Tidak ada lampiran foto bukti.</div>';
-        }
-
-        Swal.fire({
-            title: `<div class="text-left text-lg font-extrabold text-white flex items-center border-b border-slate-700/80 pb-3"><i class="ph-duotone ph-clipboard-text mr-3 text-blue-500 text-3xl bg-blue-500/10 p-1.5 rounded-lg border border-blue-500/20"></i> TIKET RESOLUSI: <span class="font-mono ml-2 text-blue-400">${data.id}</span></div>`,
-            customClass: { popup: 'swal-dark !rounded-3xl' },
-            html: `
-                <div class="text-left text-sm text-slate-200 space-y-4 bg-slate-950/50 p-5 rounded-2xl border border-slate-700/80 shadow-inner mb-6 mt-4 relative overflow-hidden">
-                    <div class="relative z-10 grid grid-cols-2 gap-4">
-                        <div><span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1 block flex items-center"><i class="ph-fill ph-map-pin mr-1"></i>Lokasi</span><span class="text-white text-sm font-bold bg-slate-900 px-2 py-1 rounded border border-slate-800">${data.sekolah}</span></div>
-                        <div><span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1 block flex items-center"><i class="ph-fill ph-warning mr-1"></i>Kendala</span><span class="text-orange-400 text-sm font-bold bg-orange-900/20 px-2 py-1 rounded border border-orange-900/30">${data.kategori}</span></div>
-                    </div>
-                    <div class="relative z-10"><span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1 block flex items-center"><i class="ph-fill ph-text-align-left mr-1"></i>Kronologi Lapangan</span><div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed italic text-sm">"${data.keluhan}"</div></div>
-                    <div class="relative z-10"><span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider block mb-1 flex items-center"><i class="ph-fill ph-camera mr-1"></i>Bukti Visual</span>${fotoHtml}</div>
-                </div>
-                 
-                <div class="text-left space-y-5 bg-slate-800/50 p-5 rounded-2xl border border-slate-700/80 backdrop-blur-sm relative overflow-hidden">
-                    <div class="relative z-10">
-                        <label class="text-sm font-extrabold text-emerald-400 flex items-center mb-2 uppercase tracking-wide"><i class="ph-fill ph-wrench mr-2 text-lg bg-emerald-500/10 p-1 rounded border border-emerald-500/20"></i> Tindakan Resolusi Konkrit:</label>
-                        <textarea id="input-tindakan" class="swal2-textarea w-full text-sm bg-slate-900 text-white border-slate-600 m-0 p-4 rounded-xl focus:ring-2 focus:ring-emerald-500 shadow-sm" placeholder="Contoh: Sudah dikirim 5 box nasi pengganti via Gojek..." rows="3"></textarea>
-                    </div>
-                    <div class="relative z-10">
-                        <label class="text-sm font-extrabold text-red-400 flex items-center mb-2 uppercase tracking-wide"><i class="ph-fill ph-lock-key mr-2 text-lg bg-red-500/10 p-1 rounded border border-red-500/20"></i> Password Admin:</label>
-                        <input type="password" id="input-password" class="swal2-input w-full text-sm bg-slate-900 text-white border-slate-600 m-0 p-4 rounded-xl focus:ring-2 focus:ring-red-500 shadow-sm font-mono" placeholder="••••••••">
-                    </div>
-                </div>
-            `,
-            background: '#1e293b', color: '#f8fafc', showCancelButton: true, confirmButtonText: '<i class="ph-bold ph-check-circle mr-2 text-lg"></i> Simpan Resolusi', confirmButtonColor: '#059669', cancelButtonText: 'Batal', cancelButtonColor: '#475569', focusConfirm: false, width: '34em',
-            preConfirm: () => {
-                const tindakan = document.getElementById('input-tindakan').value;
-                const password = document.getElementById('input-password').value;
-                if (!tindakan) { Swal.showValidationMessage('Mohon isi tindakan!'); return false; }
-                if (!password) { Swal.showValidationMessage('Password diperlukan!'); return false; }
-                return { tindakan, password };
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({title: 'Menyimpan...', allowOutsideClick: false, background: '#1e293b', color: '#fff', didOpen: () => {Swal.showLoading()}});
-                google.script.run.withSuccessHandler((res) => {
-                    if(res.success) {
-                        Swal.fire({title: 'Tiket Ditutup!', text: 'Resolusi berhasil dicatat dalam sistem.', icon: 'success', background: '#1e293b', color: '#fff', confirmButtonColor: '#3b82f6', timer: 2000});
-                        muatDataUtama(); // Muat ulang data agar update tabelnya hijau
-                    } else {
-                        Swal.fire({title: 'Ditolak!', text: res.error, icon: 'error', background: '#1e293b', color: '#fff', confirmButtonColor: '#ef4444'});
-                    }
-                }).selesaikanMasalah(rowIdx, result.value.tindakan, result.value.password);
-            }
-        });
-    }
-
-    // INISIALISASI
-    $(document).ready(function() { 
-        muatDataUtama(); 
-    });
-  </script>
+    
 </body>
 </html>
